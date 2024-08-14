@@ -2,8 +2,20 @@
 
 This is the Gilded Rose kata in TypeScript.
 
-## Getting started
 
+
+
+# Steps Undertaken
+### Created Unit Tests for the Existing Code<br>
+Before making any changes, I wrote unit tests for the existing code to ensure that the current functionality was correctly covered and that I could detect any unintended side effects during the refactoring process.
+
+### Refactored the Gilded Rose Code<br>
+I refactored the code to improve readability, maintainability, and scalability. This involved breaking down complex logic into simpler, more modular components while ensuring that the unit tests continued to pass without any failures.
+
+### Enhanced the Gilded Rose Code According to Requirements<br>
+After refactoring, I updated the code to meet the additional requirements. 
+
+## Getting started
 Install dependencies
 
 ```sh
