@@ -32,7 +32,7 @@ export class ItemUpdater {
     }
   }
 
-  static updateBrie(item: Item) {
+  static updateBrie(item: Item) :Item{
     this.validateItem(item);
     if (item.sellIn <= 0) {
       item.quality = Math.min(item.quality + 2, this.MAXIMUM_QUALITY);
@@ -44,7 +44,7 @@ export class ItemUpdater {
     return item;
   }
 
-  static updateBackstage(item: Item) {
+  static updateBackstage(item: Item) :Item {
     this.validateItem(item);
     if (item.sellIn <= 0) {
       item.quality = this.MINIMUM_QUALITY;
@@ -57,15 +57,15 @@ export class ItemUpdater {
     return item;
   }
 
-  static updateNormal(item: Item) {
+  static updateNormal(item: Item) :Item {
     return this.adjustQuality(item, this.QualityByType.NORMAL);
   }
 
-  static updateConjured(item: Item) {
+  static updateConjured(item: Item) :Item{
     return this.adjustQuality(item, this.QualityByType.CONJURED);
   }
 
-  private static adjustQuality(item: Item, decrement: number) {
+  private static adjustQuality(item: Item, decrement: number) :Item{
     this.validateItem(item);
     item.quality = Math.max(item.quality - decrement, this.MINIMUM_QUALITY);
     item.sellIn -= 1;
@@ -76,7 +76,7 @@ export class ItemUpdater {
     return item;
   }
 
-  static updateSulfuras(item: Item) {
+  static updateSulfuras(item: Item) :Item {
     return item;
   }
 }
