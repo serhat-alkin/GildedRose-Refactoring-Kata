@@ -10,60 +10,105 @@ export class Item {
   }
 }
 
-export class GildedRose {
-  items: Array<Item>;
+export class ItemUpdater {
+  static readonly MAXIMUM_QUALITY = 50;
+  static readonly MINIMUM_QUALITY = 0;
 
-  constructor(items = [] as Array<Item>) {
+  static QualityByType = {
+    NORMAL: 1,
+    CONJURED: 2
+  };
+
+  static ItemTypes = {
+    BRIE: 'Aged Brie',
+    SULFURAS: 'Sulfuras, Hand of Ragnaros',
+    BACKSTAGE: 'Backstage passes to a TAFKAL80ETC concert',
+    CONJURED: 'Conjured',
+  };
+
+  private static validateItem(item: Item) {
+    if (typeof item.quality !== 'number' || typeof item.sellIn !== 'number') {
+      throw new Error("Invalid item data: 'quality' and 'sellIn' must be numbers.");
+    }
+  }
+
+  static updateBrie(item: Item) {
+    this.validateItem(item);
+    if (item.sellIn <= 0) {
+      item.quality = Math.min(item.quality + 2, this.MAXIMUM_QUALITY);
+    } else {
+      item.quality = Math.min(item.quality + 1, this.MAXIMUM_QUALITY);
+    }
+
+    item.sellIn -= 1;
+    return item;
+  }
+
+  static updateBackstage(item: Item) {
+    this.validateItem(item);
+    if (item.sellIn <= 0) {
+      item.quality = this.MINIMUM_QUALITY;
+    } else {
+      const increment = item.sellIn <= 5 ? 3 : item.sellIn <= 10 ? 2 : 1;
+      item.quality = Math.min(item.quality + increment, this.MAXIMUM_QUALITY);
+    }
+
+    item.sellIn -= 1;
+    return item;
+  }
+
+  static updateNormal(item: Item) {
+    return this.adjustQuality(item, this.QualityByType.NORMAL);
+  }
+
+  static updateConjured(item: Item) {
+    return this.adjustQuality(item, this.QualityByType.CONJURED);
+  }
+
+  private static adjustQuality(item: Item, decrement: number) {
+    this.validateItem(item);
+    item.quality = Math.max(item.quality - decrement, this.MINIMUM_QUALITY);
+    item.sellIn -= 1;
+    if (item.sellIn < 0) {
+      item.quality = Math.max(item.quality - decrement, this.MINIMUM_QUALITY);
+    }
+
+    return item;
+  }
+
+  static updateSulfuras(item: Item) {
+    return item;
+  }
+}
+
+
+export class GildedRose {
+  items: Array < Item > ;
+
+  constructor(items = [] as Array < Item > ) {
     this.items = items;
   }
 
   updateQuality() {
-    for (let i = 0; i < this.items.length; i++) {
-      if (this.items[i].name != 'Aged Brie' && this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-        if (this.items[i].quality > 0) {
-          if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-            this.items[i].quality = this.items[i].quality - 1
-          }
-        }
-      } else {
-        if (this.items[i].quality < 50) {
-          this.items[i].quality = this.items[i].quality + 1
-          if (this.items[i].name == 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].sellIn < 11) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1
-              }
-            }
-            if (this.items[i].sellIn < 6) {
-              if (this.items[i].quality < 50) {
-                this.items[i].quality = this.items[i].quality + 1
-              }
-            }
-          }
-        }
-      }
-      if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-        this.items[i].sellIn = this.items[i].sellIn - 1;
-      }
-      if (this.items[i].sellIn < 0) {
-        if (this.items[i].name != 'Aged Brie') {
-          if (this.items[i].name != 'Backstage passes to a TAFKAL80ETC concert') {
-            if (this.items[i].quality > 0) {
-              if (this.items[i].name != 'Sulfuras, Hand of Ragnaros') {
-                this.items[i].quality = this.items[i].quality - 1
-              }
-            }
-          } else {
-            this.items[i].quality = this.items[i].quality - this.items[i].quality
-          }
-        } else {
-          if (this.items[i].quality < 50) {
-            this.items[i].quality = this.items[i].quality + 1
-          }
-        }
+    for (const item of this.items) {
+      switch (item.name) {
+        case ItemUpdater.ItemTypes.BRIE:
+          ItemUpdater.updateBrie(item);
+          continue;
+        case ItemUpdater.ItemTypes.SULFURAS:
+          ItemUpdater.updateSulfuras(item);
+          continue;
+        case ItemUpdater.ItemTypes.BACKSTAGE:
+          ItemUpdater.updateBackstage(item);
+          continue;
+        case ItemUpdater.ItemTypes.CONJURED:
+          ItemUpdater.updateConjured(item);
+          continue;
+        default:
+          ItemUpdater.updateNormal(item);
       }
     }
 
-    return this.items;
+    return this.items
   }
 }
